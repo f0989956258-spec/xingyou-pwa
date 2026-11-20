@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>行遊｜台灣縣市旅遊</title>
+<meta name="description" content="快速規劃台灣縣市旅行行程、地圖路線、交通估算與旅費分帳。">
+<meta name="theme-color" content="#2F6F62">
+<meta name="background-color" content="#F4F1E7">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-touch-fullscreen" content="yes">
+<meta name="apple-mobile-web-app-title" content="行遊">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F1E7;--card:#FFFEFA;--tx:#293A32;--sub:#6C7D70;--ac:#2F6F62;--ac2:#E8F0E7;--line:#D5DDCE;--warn:#B9563D;--sun:#E8A45B;--safe-top:env(safe-area-inset-top,0px);--safe-right:env(safe-area-inset-right,0px);--safe-bottom:env(safe-area-inset-bottom,0px);--safe-left:env(safe-area-inset-left,0px);color-scheme:light;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#18221D;--card:#222F28;--tx:#E8EFE5;--sub:#A0B2A3;--ac:#84B5A0;--ac2:#2D4035;--line:#3D5144;--warn:#F08A72;--sun:#E8A45B;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#18221D;--card:#222F28;--tx:#E8EFE5;--sub:#A0B2A3;--ac:#84B5A0;--ac2:#2D4035;--line:#3D5144;--warn:#F08A72;--sun:#E8A45B;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;height:100dvh;margin:0;background:var(--bg)}
+body{background:radial-gradient(ellipse at 50% -10%,rgba(232,164,91,.10),transparent 48%),var(--bg);color:var(--tx);font:15px/1.55 -apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;overscroll-behavior-y:none;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+#app{display:flex;flex-direction:column;height:100%;min-height:100dvh;max-width:520px;margin:0 auto;padding-left:var(--safe-left);padding-right:var(--safe-right)}
+header{display:flex;align-items:center;justify-content:space-between;padding:calc(12px + var(--safe-top)) 16px 8px}
+h1,h2{font-family:"Noto Sans TC",-apple-system,"PingFang TC",sans-serif;margin:0}
+h1{font-size:26px;font-weight:900;letter-spacing:.04em}
+h2{font-size:19px}
+main{flex:1;min-height:0;overflow:auto;padding:4px 16px 16px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.sub{color:var(--sub);margin:2px 0 14px}
+label{display:block;font-weight:600;margin:16px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--card);color:var(--tx);border-radius:999px;padding:7px 14px;font:inherit;cursor:pointer}
+.chip.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px}
+.days .chip{flex:none}
+.btn{width:100%;border:0;background:var(--ac);color:#fff;font:inherit;font-weight:700;padding:14px;border-radius:12px;margin-top:22px;cursor:pointer}
+.ghost{background:none;border:1.5px solid var(--line);color:var(--tx);border-radius:10px;padding:6px 12px;font:inherit;cursor:pointer}
+.mini{border:0;background:var(--ac2);color:var(--ac);border-radius:8px;width:32px;height:32px;font:inherit;cursor:pointer}
+.mini.x{color:var(--warn)}
+.tl{position:relative;padding-left:22px}
+.tl:before{content:"";position:absolute;left:7px;top:8px;bottom:8px;border-left:2px dashed var(--line)}
+.stop{position:relative;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:center}
+.stop:before{content:"";position:absolute;left:-21px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:var(--ac);border:3px solid var(--bg)}
+.stop b{display:block}
+.tm{font-variant-numeric:tabular-nums;color:var(--ac);font-weight:700;min-width:46px}
+.stop .mid{flex:1}
+.stop .meta{font-size:12.5px;color:var(--sub)}
+.ops{display:flex;gap:4px}
+.leg{margin:6px 0;color:var(--sub);font-size:12.5px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.row{display:flex;gap:8px;align-items:center}
+input,textarea,select{font:inherit;color:var(--tx);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;min-width:0}
+input{flex:1}
+textarea{width:100%;min-height:110px}
+.stay-card{padding:14px}
+.stay-card .stay-heading{align-items:flex-start;margin-bottom:6px}
+.stay-card .stay-heading h2{font-size:17px}
+.stay-card .stay-heading .sub{margin:2px 0 0}
+.stay-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stay-field{display:block;margin:4px 0;font-size:13px}
+.stay-field input,.stay-field textarea{display:block;width:100%;margin-top:4px}
+.stay-field.full{grid-column:1/-1}
+.stay-field textarea{min-height:72px}
+.stay-map{display:inline-flex;margin-top:8px;text-decoration:none}
+.stay-map[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+.stay-location .meta{margin:3px 0 8px;overflow-wrap:anywhere}
+nav{display:flex;border-top:1px solid var(--line);background:var(--card);padding-bottom:var(--safe-bottom)}
+nav button{flex:1;border:0;background:none;color:var(--sub);font:inherit;font-size:12.5px;padding:9px 0 8px;cursor:pointer;min-height:52px}
+nav button span{display:block;font-size:20px;line-height:1.2}
+nav button.on{color:var(--ac);font-weight:700}
+.empty{color:var(--sub);text-align:center;padding:28px 0}
+.sum{font-family:"Noto Serif TC",serif;font-size:30px;font-weight:900}
+.map{background:var(--card);border:1px solid var(--line);border-radius:12px;width:100%}
+.tag{display:inline-block;background:var(--ac2);color:var(--ac);border-radius:6px;padding:0 6px;font-size:12px;margin-right:6px}
+.install-app{position:fixed;right:14px;bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:20;border:0;border-radius:999px;background:var(--sun);color:#293A32;font:inherit;font-weight:800;padding:10px 14px;box-shadow:0 6px 18px rgba(41,58,50,.18);cursor:pointer}
+.install-app[hidden]{display:none}
+.update-app{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:22;transform:translateX(-50%);border:0;border-radius:999px;background:var(--ac);color:#fff;font:inherit;font-weight:800;padding:11px 16px;box-shadow:0 6px 18px rgba(41,58,50,.24);cursor:pointer;white-space:nowrap}
+.update-app[hidden]{display:none}
+.offline-note{position:fixed;left:50%;top:calc(8px + env(safe-area-inset-top,0px));z-index:21;transform:translateX(-50%);background:var(--tx);color:var(--card);border-radius:999px;padding:5px 12px;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+.offline-note[hidden]{display:none}
+
+/* 島嶼手札：紙感底色、手繪路徑與暖橘行程標記 */
+h1{display:inline-flex;align-items:center;gap:8px}
+h1::after{content:"";width:29px;height:9px;border-top:2px dashed var(--sun);border-right:2px dashed var(--sun);border-radius:0 12px 0 0;transform:translateY(3px);opacity:.9}
+.chip,.btn,.ghost,.mini,nav button{transition:background-color .18s ease,border-color .18s ease,color .18s ease,transform .18s ease,filter .18s ease}
+.chip:hover,.ghost:hover,.mini:hover{border-color:var(--sun)}
+.btn:hover{filter:brightness(.96);transform:translateY(-1px)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+@media(min-width:720px){body{padding:24px 0}#app{height:min(900px,calc(100vh - 48px));min-height:520px;border:1px solid var(--line);border-radius:22px;box-shadow:0 20px 60px rgba(41,58,50,.12);overflow:hidden}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<button id="install-app" class="install-app" type="button" hidden>安裝「行遊」App</button>
+<button id="update-app" class="update-app" type="button" hidden>✨ 新版本可用，立即更新</button>
+<div id="offline-note" class="offline-note" role="status" aria-live="polite" hidden>目前為離線模式，已儲存的行程仍可使用</div>
+<script>
+const R=`基隆|基隆廟口夜市,25.1286,121.7437,f,90;和平島公園,25.1618,121.7599,n,90;正濱漁港彩色屋,25.1507,121.7690,c,60;潮境公園,25.1494,121.8018,n,90;海洋科技博物館,25.1442,121.8085,c,90;獅球嶺砲台,25.1370,121.7360,c,60;槓子寮砲台,25.1500,121.7830,c,60;仙洞巖,25.1360,121.7870,n,60;中正公園,25.1460,121.7640,n,60;長榮桂冠酒店基隆,25.1310,121.7400,l,0;海洋廣場,25.1300,121.7410,e,60
+台北|故宮博物院,25.102,121.548,c,120;士林夜市,25.088,121.524,f,90;台北 101,25.034,121.565,s,90;象山步道,25.027,121.577,n,90;龍山寺,25.037,121.500,c,60;西門町,25.042,121.508,s,90;永康街美食,25.033,121.529,f,90;大稻埕迪化街,25.063,121.510,c,90;陽明山國家公園,25.1560,121.5440,n,150;北投溫泉,25.1370,121.5070,n,120;貓空纜車,24.9680,121.5880,n,120;寧夏夜市,25.0560,121.5150,f,90;松山文創園區,25.0440,121.5600,c,60;圓山大飯店,25.0780,121.5260,l,0;台北小巨蛋,25.0510,121.5500,e,90;美麗華摩天輪,25.0830,121.5570,e,60
+新北|九份老街,25.1097,121.8445,c,120;淡水老街,25.169,121.440,f,120;平溪天燈老街,25.0256,121.7386,c,90;野柳地質公園,25.2063,121.6905,n,90;烏來老街,24.8636,121.5500,n,120;福隆海水浴場,25.0173,121.9463,n,90;三峽老街,24.9340,121.3690,c,90;鶯歌陶瓷老街,24.9540,121.3540,c,90;十分瀑布,25.0420,121.7770,n,90;黃金博物館,25.1000,121.8570,c,90;石碇老街,24.9910,121.6570,f,60;淡水福容大飯店,25.1830,121.4120,l,0;新北歡樂耶誕城,25.0130,121.4650,e,90
+桃園|大溪老街,24.8890,121.2870,c,90;石門水庫,24.8110,121.2450,n,90;虎頭山公園,24.9930,121.2990,n,60;Xpark 水族館,25.0124,121.2145,s,150;小烏來天空步道,24.8195,121.3563,n,90;慈湖,24.8450,121.2940,c,60;拉拉山,24.7050,121.4400,n,180;竹圍漁港,25.1050,121.2300,f,60;中壢夜市,24.9540,121.2250,f,90;龍潭大池,24.8600,121.2160,n,60;大溪笠復威斯汀度假酒店,24.8860,121.2790,l,0;小人國主題樂園,24.8650,121.2090,e,180
+新竹|內灣老街,24.7066,121.1830,f,90;新竹城隍廟,24.8040,120.9680,f,60;北埔老街,24.6990,121.0580,c,90;新竹市立動物園,24.7970,120.9760,n,90;新竹漁港海岸,24.8330,120.9140,n,90;六福村,24.7700,121.0450,s,180;十八尖山,24.7920,120.9990,n,60;竹北新瓦屋,24.8390,121.0100,c,60;五指山,24.7220,121.0450,n,90;煙波大飯店新竹湖濱館,24.8140,120.9590,l,0;新竹市區影城,24.8040,120.9700,e,120
+苗栗|南庄老街,24.6070,121.0000,f,90;三義木雕街,24.4140,120.7690,c,90;勝興車站,24.3920,120.7790,c,60;西湖渡假村,24.5840,120.7480,n,120;苗栗客家文化園區,24.5340,120.8360,c,90;龍騰斷橋,24.3980,120.7840,c,60;獅頭山,24.5860,121.0070,n,120;卓蘭水果園,24.3170,120.8270,f,60;白沙屯拱天宮,24.5000,120.6600,c,90;南庄雲水度假森林,24.5880,121.0020,l,0;飛牛牧場,24.4990,120.7440,e,120
+台中|彩虹眷村,24.1330,120.6130,c,60;高美濕地,24.3120,120.5520,n,90;逢甲夜市,24.1790,120.6460,f,90;台中國家歌劇院,24.1630,120.6400,c,90;一中街,24.1480,120.6850,f,90;梧棲漁港,24.2530,120.5280,f,60;大坑登山步道,24.1920,120.7160,n,90;路思義教堂,24.1810,120.5990,c,60;宮原眼科,24.1370,120.6830,f,60;秋紅谷,24.1680,120.6420,n,60;武陵農場,24.3600,121.3200,n,240;台中日月千禧酒店,24.1660,120.6460,l,0;麗寶樂園,24.3220,120.7050,e,240
+彰化|鹿港老街,24.0580,120.4320,c,120;八卦山大佛,24.0790,120.5420,c,60;田尾公路花園,23.8930,120.5230,n,90;彰化肉圓,24.0820,120.5410,f,45;王功漁港,23.9700,120.3260,n,90;扇形車庫,24.0825,120.5400,c,60;溪州樂活公園,23.8500,120.4830,n,60;台灣玻璃館,24.0790,120.4500,c,60;台灣民俗村,24.0200,120.5600,s,120;彰化市區飯店,24.0810,120.5390,l,0;彰化市區影城,24.0800,120.5400,e,120
+南投|日月潭,23.8570,120.9150,n,180;清境農場,24.0580,121.1620,n,150;溪頭自然教育園區,23.6740,120.7970,n,150;埔里酒廠,23.9640,120.9710,f,60;集集綠色隧道,23.8310,120.7870,n,60;廬山溫泉,24.0000,121.1500,n,120;竹山妖怪村,23.7600,120.6770,c,90;杉林溪,23.6000,120.8170,n,150;奧萬大,24.0500,121.1500,n,150;九族文化村,23.8970,120.9460,s,180;日月潭涵碧樓,23.8530,120.9100,l,0;日月潭纜車,23.8700,120.9300,e,90
+雲林|北港朝天宮,23.5680,120.3010,c,90;古坑咖啡,23.6470,120.5570,f,60;劍湖山世界,23.6550,120.5690,s,180;虎尾糖廠,23.7070,120.4310,c,60;雲林布袋戲館,23.7090,120.4300,c,60;斗六太平老街,23.7080,120.5360,c,60;草嶺,23.5900,120.6100,n,120;台西海口,23.7090,120.1890,n,60;西螺老街,23.7970,120.4570,c,60;劍湖山王子大飯店,23.6560,120.5700,l,0;斗六市區影城,23.7120,120.5430,e,120
+嘉義|阿里山,23.5100,120.8050,n,240;檜意森活村,23.4790,120.4470,c,90;文化路夜市,23.4800,120.4500,f,90;奮起湖老街,23.5040,120.6340,f,90;嘉義公園,23.4850,120.4620,n,60;太平雲梯,23.5300,120.7130,n,60;朴子配天宮,23.4650,120.2460,c,60;東石漁人碼頭,23.4550,120.1500,n,90;故宮南院,23.4600,120.3330,c,120;嘉義市區飯店,23.4800,120.4500,l,0;嘉義市區影城,23.4810,120.4500,e,120
+台南|安平古堡,23.0010,120.1600,c,90;赤崁樓,22.9970,120.2030,c,60;神農街,22.9990,120.1970,c,60;花園夜市,23.0090,120.2100,f,90;奇美博物館,22.9340,120.2260,c,120;七股鹽山,23.1420,120.0710,n,60;林百貨,22.9930,120.1970,s,60;億載金城,22.9810,120.1590,c,60;四草綠色隧道,23.0300,120.1450,n,90;烏山頭水庫,23.2000,120.4130,n,90;井仔腳瓦盤鹽田,23.2640,120.1230,n,60;台南香格里拉遠東國際飯店,22.9770,120.2250,l,0;台南市區影城,22.9930,120.2000,e,120
+高雄|駁二藝術特區,22.6200,120.2810,c,120;蓮池潭,22.6820,120.2970,c,90;六合夜市,22.6310,120.3010,f,90;旗津,22.6120,120.2680,f,120;西子灣,22.6240,120.2650,n,90;佛光山,22.7580,120.4400,c,120;美麗島站光之穹頂,22.6310,120.3020,c,45;壽山動物園,22.6390,120.2790,n,90;瑞豐夜市,22.6690,120.3000,f,90;旗山老街,22.8880,120.4830,c,90;澄清湖,22.6570,120.3600,n,90;漢來大飯店,22.6150,120.3010,l,0;夢時代摩天輪,22.6000,120.3050,e,60;義大遊樂世界,22.7660,120.4040,e,240
+屏東|墾丁大街,21.9440,120.7970,f,90;鵝鑾鼻燈塔,21.9020,120.8530,n,60;恆春古城,22.0020,120.7440,c,60;海洋生物博物館,22.0480,120.7470,c,180;小琉球,22.3400,120.3710,n,240;四重溪溫泉,22.0770,120.7980,n,90;佳樂水,21.9740,120.8650,n,90;勝利星村,22.6720,120.4820,f,60;三地門,22.7120,120.6560,c,90;墾丁凱撒大飯店,21.9450,120.7960,l,0;墾丁南灣水上活動,21.9500,120.8000,e,120
+宜蘭|羅東夜市,24.6772,121.7664,f,90;傳統藝術中心,24.6780,121.8190,c,120;太平山,24.5000,121.5400,n,180;礁溪溫泉,24.8210,121.7730,n,120;蘇澳冷泉,24.5930,121.8530,n,90;宜蘭設治紀念館,24.7550,121.7570,c,60;冬山河親水公園,24.6540,121.7820,n,90;龜山島賞鯨,24.8470,121.9500,n,240;蘭陽博物館,24.8680,121.8260,c,90;梅花湖,24.6520,121.6080,n,90;礁溪老爺酒店,24.8290,121.7750,l,0;幾米廣場,24.7610,121.7580,e,60
+花蓮|太魯閣國家公園,24.1590,121.6210,n,180;七星潭,24.0250,121.6280,n,90;東大門夜市,23.9930,121.6060,f,90;松園別館,23.9840,121.6140,c,60;鯉魚潭,23.9340,121.5000,n,90;清水斷崖,24.2300,121.6940,n,60;花蓮文創園區,23.9810,121.6010,c,60;林田山林業文化園區,23.7150,121.4120,c,90;瑞穗溫泉,23.4970,121.3750,n,120;慶修院,23.9700,121.5880,c,60;花蓮美侖大飯店,23.9740,121.6050,l,0;遠雄海洋公園,23.9900,121.6240,e,240
+台東|三仙台,23.1260,121.4140,n,90;池上伯朗大道,23.1000,121.2200,n,90;鹿野高台,22.9140,121.1400,n,90;鐵花村,22.7540,121.1420,c,90;知本溫泉,22.7000,121.0200,n,120;台東森林公園,22.7660,121.1370,n,60;都蘭糖廠,22.8835,121.2270,c,60;富岡漁港,22.7960,121.1980,f,60;綠島,22.6600,121.4900,n,240;太麻里金針山,22.6100,121.0000,n,120;知本老爺酒店,22.7000,121.0230,l,0;台東市區影城,22.7550,121.1450,e,120
+澎湖|跨海大橋,23.6110,119.5800,c,60;雙心石滬,23.2150,119.4290,n,60;馬公老街,23.5650,119.5650,f,90;山水沙灘,23.5380,119.6770,n,90;澎湖天后宮,23.5660,119.5660,c,60;吉貝沙尾,23.7270,119.5880,n,90;望安島,23.3600,119.5000,n,150;澎湖水族館,23.6450,119.5600,c,90;風櫃洞,23.5170,119.5600,n,60;澎湖馬公市區旅宿,23.5650,119.5700,l,0;觀音亭親水公園,23.5680,119.5720,e,60
+金門|翟山坑道,24.4350,118.3400,c,60;水頭聚落,24.4180,118.3180,c,90;模範街,24.4380,118.3170,f,60;太武山,24.4600,118.4000,n,90;金門酒廠,24.4500,118.3800,s,60;古崗樓,24.4590,118.3910,c,60;瓊林聚落,24.4570,118.3600,c,60;莒光樓,24.4350,118.3160,c,45;古寧頭戰史館,24.4930,118.3200,c,60;金門金城旅宿,24.4380,118.3200,l,0;貢糖觀光工廠,24.4390,118.3290,e,60
+連江|北海坑道,26.1500,119.9500,c,60;芹壁村,26.2220,119.9420,c,90;大漢據點,26.1450,119.9780,n,60;津沙聚落,26.1430,119.9230,c,60;馬祖酒廠,26.1540,119.9510,s,60;鐵堡,26.1530,119.9740,c,60;八八坑道,26.1420,119.9460,c,60;南竿市區旅宿,26.1530,119.9500,l,0;藍眼淚賞景,26.1400,119.9500,e,90`;
+const D=Object.fromEntries(R.split("\n").map(l=>{const[k,v]=l.split("|");return[k,v.split(";").map(q=>{const a=q.split(",");return[a[0],+a[1],+a[2],{n:"nature",c:"culture",f:"food",s:"shopping",l:"stay",e:"fun"}[a[3]],+a[4]]})]}));
+const C=Object.fromEntries(Object.entries(D).map(([k,v])=>[k,{lat:v.reduce((s,p)=>s+p[1],0)/v.length,lng:v.reduce((s,p)=>s+p[2],0)/v.length}]));
+const OUT=[[121.54,25.30],[122.0,25.0],[121.87,24.6],[121.62,24.0],[121.38,23.1],[120.9,22.35],[120.85,21.9],[120.7,22.0],[120.6,22.4],[120.27,22.6],[120.1,23.0],[120.15,23.37],[120.15,23.7],[120.3,24.1],[120.5,24.3],[120.9,24.85],[121.05,25.05],[121.4,25.18]];
+const PJ=(g,l)=>[(g-118)*81,(26.5-l)*81];
+const HS={台北:[9,7],新北:[18,13],桃園:[52,24],新竹:[78,36],苗栗:[109,47],台中:[156,57],彰化:[177,65],雲林:[211,73],嘉義:[241,83],台南:[285,95],高雄:[345,108]};
+const ISL=["澎湖","金門","連江"];
+const TG={nature:"自然",culture:"人文",food:"美食",shopping:"購物",night:"夜市",rec:"推薦景點",stay:"旅宿",fun:"娛樂場所"};
+const uid=()=>Math.random().toString(36).slice(2,8);
+const esc=s=>String(s).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const mk=x=>({id:uid(),name:x[0],lat:x[1],lng:x[2],type:x[3],stay:x[4]});
+const normalizeTrip=(value)=>{
+  if(!value||typeof value!=="object"||!D[value.dest]||!Array.isArray(value.days))return null;
+  const days=value.days.map(day=>Array.isArray(day)?day.filter(p=>p&&typeof p.name==="string"&&Number.isFinite(Number(p.lat))&&Number.isFinite(Number(p.lng))).map(p=>({id:p.id||uid(),name:p.name,lat:Number(p.lat),lng:Number(p.lng),type:p.type||"culture",stay:Number.isFinite(Number(p.stay))?Number(p.stay):60})):[]);
+  const members=Array.isArray(value.members)&&value.members.length?value.members.filter(m=>m&&typeof m.n==="string").map(m=>({n:m.n,r:m.r==="編輯"?"編輯":"檢視"})):[{n:"我",r:"編輯"}];
+  if(!members.length)members.push({n:"我",r:"編輯"});
+  const exp=Array.isArray(value.exp)?value.exp.filter(e=>e&&typeof e.item==="string"&&Number.isFinite(Number(e.amt))).map(e=>({item:e.item,amt:Number(e.amt),who:members.some(m=>m.n===e.who)?e.who:members[0].n})):[];
+  return {dest:value.dest,days:days.length?days:[[]],members,exp,notes:typeof value.notes==="string"?value.notes:"",log:Array.isArray(value.log)?value.log.filter(x=>typeof x==="string"):[] ,accommodations:Array.isArray(value.accommodations)?value.accommodations:null};
+};
+const LOCAL_SAVE_JOURNAL_KEY = "xingyou_local_save_pending";
+const LOCAL_SAVE_VERSION_KEY = "xingyou_local_version";
+const localVersionOrder = (version) => Number(String(version || "").split("-")[0]) || 0;
+const compareLocalVersions = (left, right) => {
+  const delta = localVersionOrder(left) - localVersionOrder(right);
+  return delta || String(left || "").localeCompare(String(right || ""));
+};
+const newLocalVersion = () => {
+  let now = Date.now() * 1000;
+  try {
+    if (Number.isFinite(performance.timeOrigin)) now = Math.floor((performance.timeOrigin + performance.now()) * 1000);
+  } catch (e) {}
+  let previous = 0;
+  try { previous = localVersionOrder(localStorage.getItem(LOCAL_SAVE_VERSION_KEY)); } catch (e) {}
+  return `${Math.max(now, previous + 1)}-${uid()}`;
+};
+let localSaveFlushTimer = 0;
+const scheduleLocalSaveFlush = (operation) => {
+  clearTimeout(localSaveFlushTimer);
+  localSaveFlushTimer = setTimeout(() => {
+    localSaveFlushTimer = 0;
+    try { void Promise.resolve(operation()).catch(() => {}); } catch (e) {}
+  }, 150);
+};
+const hasPendingLocalSaveJournal = () => {
+  try { return localStorage.getItem(LOCAL_SAVE_JOURNAL_KEY) !== null; } catch (e) { return true; }
+};
+let S = {from:"台北",tab:"plan",day:0,form:{dest:"台北",days:3,tags:["culture","food"],lv:"一般"},trip:null};
+let recoveredLocalSave = false;
+try {
+  const raw = localStorage.getItem(LOCAL_SAVE_JOURNAL_KEY);
+  if (raw !== null) {
+    const entry = JSON.parse(raw);
+    if (typeof entry?.version === "string" && Object.prototype.hasOwnProperty.call(entry, "trip")) {
+      S.trip = normalizeTrip(entry.trip);
+      recoveredLocalSave = true;
+    }
+  }
+  if (!recoveredLocalSave) {
+    const stored = localStorage.getItem("xingyou");
+    if (stored) {
+      const trip = JSON.parse(stored);
+      S.trip = normalizeTrip(trip);
+    }
+  }
+} catch (e) {}
+const save = () => {
+  let snapshot;
+  try { snapshot = S.trip === null ? null : JSON.parse(JSON.stringify(S.trip)); } catch (e) { snapshot = S.trip; }
+  const version = newLocalVersion();
+  const journalRaw = JSON.stringify({version, trip:snapshot});
+  const tripRaw = JSON.stringify(snapshot);
+  const persist = () => {
+    let nextTrip = snapshot;
+    let nextVersion = version;
+    let journalCurrent = null;
+    try {
+      journalCurrent = localStorage.getItem(LOCAL_SAVE_JOURNAL_KEY);
+      if (journalCurrent !== null) {
+        const current = JSON.parse(journalCurrent);
+        if (typeof current?.version === "string" && Object.prototype.hasOwnProperty.call(current, "trip")) {
+          nextTrip = current.trip;
+          nextVersion = current.version;
+        }
+      } else if (compareLocalVersions(localStorage.getItem(LOCAL_SAVE_VERSION_KEY), version) > 0) {
+        return;
+      }
+    } catch (e) {}
+    let changed = false;
+    try { changed = JSON.stringify(S.trip) !== JSON.stringify(nextTrip); } catch (e) {}
+    S.trip = nextTrip;
+    try {
+      localStorage.setItem("xingyou", JSON.stringify(nextTrip));
+      localStorage.setItem(LOCAL_SAVE_VERSION_KEY, nextVersion);
+      if (journalCurrent !== null && localStorage.getItem(LOCAL_SAVE_JOURNAL_KEY) === journalCurrent) {
+        localStorage.removeItem(LOCAL_SAVE_JOURNAL_KEY);
+      }
+    } catch (e) {}
+    if (!hasPendingLocalSaveJournal()) window.XingyouCloud?.onLocalSave(nextTrip);
+    if (changed && typeof render === "function") render();
+  };
+  try { localStorage.setItem(LOCAL_SAVE_JOURNAL_KEY, journalRaw); } catch (e) {}
+  try { localStorage.setItem(LOCAL_SAVE_VERSION_KEY, version); } catch (e) {}
+  try { localStorage.setItem("xingyou", tripRaw); } catch (e) {}
+  const lock = window.XingyouCloud?.withLocalSave;
+  if (typeof lock === "function" && navigator.locks?.request) scheduleLocalSaveFlush(() => lock(persist));
+  else scheduleLocalSaveFlush(persist);
+};
+function dist(a,b){const r=Math.PI/180,dl=(b.lat-a.lat)*r,dg=(b.lng-a.lng)*r;const h=Math.sin(dl/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dg/2)**2;return 12742*Math.asin(Math.sqrt(h))}
+function leg(a,b){const d=dist(a,b)*1.3;if(d<1.2)return{i:"🚶",m:"步行",t:Math.max(3,Math.round(d/4.5*60)),d};return{i:"🚇",m:"大眾運輸",t:Math.round(d/25*60+8),d}}
+const isNight=p=>/夜市|廟口|老街|鐵花村|美食|文創|漁人碼頭/.test(p.name);
+const REC=new Set("故宮博物院,台北 101,象山步道,九份老街,淡水老街,野柳地質公園,平溪天燈老街,十分瀑布,大溪老街,內灣老街,南庄老街,勝興車站,彩虹眷村,高美濕地,逢甲夜市,鹿港老街,日月潭,清境農場,溪頭自然教育園區,北港朝天宮,阿里山,檜意森活村,安平古堡,赤崁樓,奇美博物館,駁二藝術特區,蓮池潭,旗津,佛光山,墾丁大街,鵝鑾鼻燈塔,小琉球,太平山,羅東夜市,太魯閣國家公園,七星潭,清水斷崖,三仙台,池上伯朗大道,綠島,跨海大橋,馬公老街,翟山坑道,水頭聚落,芹壁村,北海坑道,士林夜市,六合夜市,花園夜市,基隆廟口夜市,文化路夜市,正濱漁港彩色屋".split(","));
+const hit=(p,t)=>(t.includes(p.type)||(t.includes("night")&&isNight(p))||(t.includes("rec")&&REC.has(p.name)))?1:0;
+function gen(dest,days,tags,lv){
+ let n=lv==="輕鬆"?2:lv==="緊湊"?4:3;
+ let ps=D[dest].map(mk).filter(p=>p.type!=="stay").sort((a,b)=>hit(b,tags)-hit(a,tags));n=Math.min(n,Math.ceil(ps.length/days));
+ ps=ps.slice(0,days*n);
+ const nt=ps.filter(isNight),dy=ps.filter(p=>!isNight(p));dy.push(...nt.splice(days));
+ const near=(arr,from)=>{let k=0;if(from){let b=1e9;arr.forEach((p,i)=>{const x=dist(from,p);if(x<b){b=x;k=i}})}return arr.splice(k,1)[0]};
+ const out=[];
+ for(let d=0;d<days;d++){const hasN=nt.length>0,g=[],want=hasN?n-1:n;
+  while(g.length<want&&dy.length)g.push(near(dy,g[g.length-1]));
+  if(hasN)g.push(near(nt,g[g.length-1]));
+  out.push(g)}
+ if(tags.includes("stay")&&days>1){const h=D[dest].find(x=>x[3]==="stay");if(h)out.forEach((g,i)=>{if(i<days-1)g.push(mk(h))})}
+ return out}
+const EMPTY_ACCOMMODATION=Object.freeze({name:"",address:"",phone:"",checkIn:"",checkOut:"",notes:""});
+function getAccommodation(trip,dayIndex=S.day){const source=Array.isArray(trip?.accommodations)?trip.accommodations[dayIndex]:null;const value=source&&typeof source==="object"&&!Array.isArray(source)?source:{};const stay={...EMPTY_ACCOMMODATION,...value};for(const key of Object.keys(EMPTY_ACCOMMODATION))if(typeof stay[key]!=="string")stay[key]="";return stay}
+function accommodationMapUrl(stay,destination){const location=[stay.name,stay.address].map(value=>typeof value==="string"?value.trim():"").filter(Boolean);if(!location.length)return "";const query=[...location,destination].map(value=>typeof value==="string"?value.trim():"").filter(Boolean).join(" ");return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`}
+function refreshAccommodationMap(){const link=document.getElementById("stay-map");if(!link)return;const url=accommodationMapUrl(getAccommodation(S.trip,S.day),S.trip?.dest);link.href=url||"#";link.setAttribute("aria-disabled",String(!url));link.tabIndex=url?0:-1;link.textContent=url?"📍在 Google 地圖開啟住宿位置":"填寫名稱或地址後即可定位"}
+function setAccommodation(field,value){if(!Object.prototype.hasOwnProperty.call(EMPTY_ACCOMMODATION,field)||!S.trip)return;const daily=Array.from({length:S.trip.days.length},(_,index)=>getAccommodation(S.trip,index));daily[S.day][field]=String(value??"");const hasDetails=daily.some(stay=>Object.keys(EMPTY_ACCOMMODATION).some(key=>stay[key].trim()));if(hasDetails)S.trip.accommodations=daily;else delete S.trip.accommodations;save();if(field==="name"||field==="address")refreshAccommodationMap()}
+function accommodationCard(trip,dayIndex){const stay=getAccommodation(trip,dayIndex),url=accommodationMapUrl(stay,trip.dest);return `<section class="card stay-card" aria-labelledby="stay-heading"><div class="row stay-heading"><span aria-hidden="true" style="font-size:24px">🏨</span><div><h2 id="stay-heading">第 ${dayIndex+1} 天住宿資訊</h2><div class="sub">可分日記錄旅宿與入住安排。</div></div></div><div class="stay-grid"><label class="stay-field">住宿名稱<input maxlength="200" autocomplete="organization" value="${esc(stay.name)}" placeholder="例如：旅店或民宿名稱" oninput="setAccommodation('name',this.value)"></label><label class="stay-field">聯絡電話<input type="tel" inputmode="tel" maxlength="50" autocomplete="tel" value="${esc(stay.phone)}" placeholder="選填" oninput="setAccommodation('phone',this.value)"></label><label class="stay-field full">住宿地址<input maxlength="500" autocomplete="street-address" value="${esc(stay.address)}" placeholder="輸入地址或地標" oninput="setAccommodation('address',this.value)"></label><label class="stay-field">入住時間<input type="time" value="${esc(stay.checkIn)}" oninput="setAccommodation('checkIn',this.value)"></label><label class="stay-field">退房時間<input type="time" value="${esc(stay.checkOut)}" oninput="setAccommodation('checkOut',this.value)"></label><label class="stay-field full">住宿備註<textarea maxlength="5000" placeholder="例如：訂房提醒、交通方式或入住須知" oninput="setAccommodation('notes',this.value)">${esc(stay.notes)}</textarea></label></div><a id="stay-map" class="ghost stay-map" href="${esc(url||"#")}" target="_blank" rel="noopener noreferrer" aria-disabled="${url?"false":"true"}" tabindex="${url?"0":"-1"}" onclick="return this.getAttribute('aria-disabled')!=='true'">${url?"📍在 Google 地圖開啟住宿位置":"填寫名稱或地址後即可定位"}</a></section>`}
+function accommodationLocationCard(trip,dayIndex){const stay=getAccommodation(trip,dayIndex),url=accommodationMapUrl(stay,trip.dest);if(!url)return "";return `<section class="card stay-location"><div class="row"><span aria-hidden="true" style="font-size:24px">🏨</span><div><b>第 ${dayIndex+1} 天住宿位置</b><div>${esc(stay.name||"住宿")}</div>${stay.address?`<div class="meta">${esc(stay.address)}</div>`:""}</div></div><a class="ghost stay-map" href="${esc(url)}" target="_blank" rel="noopener noreferrer">📍在 Google 地圖查看</a></section>`}
+const hm=t=>String(Math.floor(t/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0");
+const chip=(t,on,fn)=>`<button class="chip ${on?"on":""}" onclick="${fn}">${t}</button>`;
+function F(k,v){const f=S.form;if(k==="tags"){f.tags=f.tags.includes(v)?f.tags.filter(x=>x!==v):[...f.tags,v]}else f[k]=v;render()}
+function make(){const f=S.form;const days=gen(f.dest,f.days,f.tags,f.lv);S.trip={dest:f.dest,days,members:[{n:"我",r:"編輯"}],exp:[],notes:"",log:["建立 "+f.dest+" "+f.days+" 日行程"]};S.day=0;S.tab="plan";save();render()}
+function reset(){S.trip=null;save();render()}
+function setTab(t){S.tab=t;render()}
+function setDay(i){S.day=Math.max(0,Math.min(Number(i)||0,(S.trip?.days?.length||1)-1));render()}
+function mv(i,d){const a=S.trip.days[S.day],j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];S.trip.log.unshift("調整第 "+(S.day+1)+" 天順序");save();render()}
+function del(i){const x=S.trip.days[S.day].splice(i,1)[0];S.trip.log.unshift("移除 "+x.name);save();render()}
+function add(name){const p=D[S.trip.dest].find(x=>x[0]===name);if(!p)return;S.trip.days[S.day].push(mk(p));S.trip.log.unshift("加入 "+name);save();render()}
+function regen(){const t=S.trip,tags=S.form.tags,n=Math.max(2,Math.round(t.days.flat().length/t.days.length));t.days=gen(t.dest,t.days.length,tags,n<=2?"輕鬆":n>=4?"緊湊":"一般");t.log.unshift("AI 重新排程");save();render()}
+function addMember(){const el=document.getElementById("mn");if(!el.value.trim())return;S.trip.members.push({n:el.value.trim(),r:"檢視"});S.trip.log.unshift("邀請 "+el.value.trim());save();render()}
+function role(i){const m=S.trip.members[i];if(i===0)return;m.r=m.r==="編輯"?"檢視":"編輯";save();render()}
+function addExp(){const a=document.getElementById("ei").value.trim(),b=parseFloat(document.getElementById("ea").value),w=document.getElementById("ew").value;if(!a||!(b>0))return;S.trip.exp.push({item:a,amt:b,who:w});S.trip.log.unshift("記帳 "+a);save();render()}
+function delExp(i){S.trip.exp.splice(i,1);save();render()}
+function notes(v){S.trip.notes=v;save()}
+function dayBar(){return `<div class="days">${S.trip.days.map((_,i)=>chip("第 "+(i+1)+" 天",i===S.day,"setDay("+i+")")).join("")}</div>`}
+
+function create(){const f=S.form;return `<main>
+<h1 style="margin-top:20px">行遊</h1><p class="sub">台灣 20 個縣市，選好條件就能排出第一版行程。</p>
+<label>選擇縣市</label><div class="chips">${Object.keys(D).map(d=>chip(d,f.dest===d,`F('dest','${d}')`)).join("")}</div>
+<label>天數</label><div class="chips">${[1,2,3,4,5].map(n=>chip(n+" 天",f.days===n,`F('days',${n})`)).join("")}</div>
+<label>興趣（可複選）</label><div class="chips">${Object.keys(TG).map(k=>chip(TG[k],f.tags.includes(k),`F('tags','${k}')`)).join("")}</div>
+<label>每日活動強度</label><div class="chips">${["輕鬆","一般","緊湊"].map(k=>chip(k,f.lv===k,`F('lv','${k}')`)).join("")}</div>
+<button class="btn" onclick="make()">生成行程</button></main>`}
+
+function plan(){const t=S.trip,a=t.days[S.day];let tm=540,h="",endAct=540;
+ a.forEach((p,i)=>{let s=tm;const nt=isNight(p);if(nt&&s<1080){h+=`<div class="leg">🍽️ 用餐休息，18:00 後進入夜市活動</div>`;s=1080}tm=s+p.stay;const over=tm>1320&&p.type!=="stay";if(p.type!=="stay")endAct=tm;
+  h+=`<div class="stop"><div class="tm" style="${over?"color:var(--warn)":""}">${hm(s)}</div><div class="mid"><b>${esc(p.name)}</b><div class="meta"><span class="tag">${TG[p.type]}</span>${REC.has(p.name)?'<span class="tag">⭐ 推薦</span>':""}${nt?'<span class="tag">🌙 夜間</span>':""}${over?'<span style="color:var(--warn)">⚠ 超過 22:00 </span>':""}${p.type==="stay"?"今晚住宿":"停留 "+p.stay+" 分"} <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name+" "+t.dest)}" target="_blank" rel="noopener" style="color:var(--ac)">📍地圖</a></div></div><div class="ops"><button class="mini" aria-label="上移" onclick="mv(${i},-1)">↑</button><button class="mini" aria-label="下移" onclick="mv(${i},1)">↓</button><button class="mini x" aria-label="移除" onclick="del(${i})">✕</button></div></div>`;
+  if(i<a.length-1){const g=leg(p,a[i+1]);tm+=g.t;h+=`<div class="leg">${g.i} ${g.m}約 ${g.t} 分鐘（${g.d.toFixed(1)} 公里）</div>`}});
+ const used=new Set(t.days.flat().map(p=>p.name)),last=a[a.length-1];
+ let pool=D[t.dest].filter(x=>!used.has(x[0])).map(mk);if(last)pool.sort((x,y)=>dist(last,x)-dist(last,y));
+ return `<main>${dayBar()}${accommodationCard(t,S.day)}
+ ${a.length?`<div class="tl">${h}</div><p class="sub" style="margin-top:12px">預計 ${hm(540)} 出發，${hm(endAct)} 結束${endAct>1320?"，已超過 22:00 終止時間，建議刪減景點":"（22:00 前收工）"}</p>`:`<div class="empty">這天還沒有景點，從下方加入。</div>`}
+ <label>附近景點${last?"（離最後一站由近到遠）":""}</label>
+ <div class="chips">${pool.slice(0,6).map(p=>chip("＋ "+esc(p.name),false,`add('${p.name}')`)).join("")||'<span class="sub">景點都排進行程了</span>'}</div>
+ <button class="btn" style="background:var(--ac2);color:var(--ac)" onclick="regen()">依偏好重新排程</button></main>`}
+
+function gm(a){const q=p=>encodeURIComponent(p.name+" "+S.trip.dest);return "https://www.google.com/maps/dir/?api=1&origin="+q(a[0])+"&destination="+q(a[a.length-1])+(a.length>2?"&waypoints="+a.slice(1,-1).map(q).join("%7C"):"")+"&travelmode=transit"}
+const IS_IOS_DEVICE=/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const SHIELD_SHORTCUT_NAME="行遊導航＋神盾";
+function shieldShortcutUrl(routeUrl){return `shortcuts://run-shortcut?name=${encodeURIComponent(SHIELD_SHORTCUT_NAME)}&input=text&text=${encodeURIComponent(routeUrl)}`}
+function tw(){const t=S.trip,pts=OUT.map(x=>PJ(...x).map(v=>v.toFixed(1)).join(",")).join(" ");
+ const dots=Object.keys(C).map(k=>{const[x,y]=PJ(C[k].lng,C[k].lat),on=k===t.dest,lb=on||k===S.from;return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${on?7:3.5}" fill="${on?"var(--warn)":"var(--ac)"}" opacity="${on?1:.6}"/>`+(lb?`<text x="${(x+(C[k].lng>121.2?-11:11)).toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="${C[k].lng>121.2?"end":"start"}" font-size="12" font-weight="700" fill="var(--tx)">${k}</text>`:"")}).join("");
+ return `<svg class="map" viewBox="0 0 340 390" style="max-height:340px;margin-bottom:10px" role="img" aria-label="台灣縣市位置示意圖"><polygon points="${pts}" fill="var(--ac2)" stroke="var(--line)" stroke-width="2" stroke-linejoin="round"/>${dots}</svg>`}
+const card=(i,t,a,b)=>`<div class="card row"><span style="font-size:26px">${i}</span><div><b>${t}</b><div>${a}</div><div class="sub meta">${b||""}</div></div></div>`;
+function rail(){const t=S.trip,d=t.dest,f=S.from;let h="";
+ if(f===d)h='<div class="empty">出發地與目的地相同，不需要城際交通。</div>';
+ else if(ISL.includes(f)||ISL.includes(d))h='<div class="card">離島與本島之間需搭飛機或船，請向航空公司或船公司查詢班次。</div>';
+ else{const km=dist(C[f],C[d]),r=km*1.2;
+  if(HS[f]&&HS[d]){const a=HS[f],b=HS[d];h+=card("🚄","高鐵",`車程約 ${Math.abs(a[1]-b[1])} 分（直達車），標準車廂約 $${Math.round(Math.abs(a[0]-b[0])*4.55/5)*5}`,"含進出站與轉乘約再加 30 分鐘")}
+  else h+=card("🚄","高鐵","此縣市沒有高鐵站","可搭台鐵或自駕")
+  h+=card("🚆","台鐵自強號",`車程約 ${Math.round(r/95*60+10)} 分，票價約 $${Math.max(20,Math.round(km*2.8/5)*5)}`,"以縣市中心概估，實際依停靠站而定")+card("🚗","自駕",`約 ${Math.round(r*1.08/70*60)} 分鐘`,`直線距離約 ${km.toFixed(0)} 公里，另計過路費與停車`)}
+ return `<main><h2 style="margin:6px 0 4px">前往${esc(d)}</h2><p class="sub">以下是依距離估算的車程與票價，不是即時時刻表。</p>
+ <label style="margin-top:6px">出發縣市</label><select style="width:100%" onchange="S.from=this.value;render()">${Object.keys(D).map(k=>`<option ${k===f?"selected":""}>${k}</option>`).join("")}</select>
+ <div style="margin-top:14px">${h}</div>
+ <div class="row" style="margin-top:8px"><a class="ghost" style="text-decoration:none;color:var(--tx)" href="https://www.thsrc.com.tw" target="_blank" rel="noopener">高鐵官網</a><a class="ghost" style="text-decoration:none;color:var(--tx)" href="https://www.railway.gov.tw" target="_blank" rel="noopener">台鐵官網</a></div></main>`}
+function mapv(){const a=S.trip.days[S.day],stayCard=accommodationLocationCard(S.trip,S.day);
+ if(!a.length)return `<main>${tw()}${dayBar()}${stayCard}<div class="empty">這天沒有景點可顯示。</div></main>`;
+ const la=a.map(p=>p.lat),lo=a.map(p=>p.lng),W=340,H=300,P=34,mnA=Math.min(...la),mxA=Math.max(...la),mnO=Math.min(...lo),mxO=Math.max(...lo);
+ const pt=p=>[P+(mxO>mnO?(p.lng-mnO)/(mxO-mnO):.5)*(W-2*P),P+(mxA>mnA?(mxA-p.lat)/(mxA-mnA):.5)*(H-2*P)];
+ const xy=a.map(pt);let tot=0,tt=0;const L=[];
+ for(let i=0;i<a.length-1;i++){const g=leg(a[i],a[i+1]);tot+=g.d;tt+=g.t;L.push(g)}
+ return `<main>${tw()}${dayBar()}${stayCard}
+ <svg class="map" viewBox="0 0 ${W} ${H}" role="img" aria-label="當日路線圖">
+ <polyline points="${xy.map(q=>q.join(",")).join(" ")}" fill="none" stroke="var(--ac)" stroke-width="2.5" stroke-dasharray="6 5"/>
+ ${xy.map((q,i)=>`<circle cx="${q[0]}" cy="${q[1]}" r="11" fill="var(--ac)"/><text x="${q[0]}" y="${q[1]+4}" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">${i+1}</text><text x="${q[0]}" y="${q[1]+(q[1]>H-50?-17:26)}" text-anchor="middle" font-size="11" fill="var(--tx)">${esc(a[i].name)}</text>`).join("")}
+ </svg>
+ ${IS_IOS_DEVICE?`<a class="btn" style="display:block;text-align:center;text-decoration:none;margin:12px 0" href="${esc(shieldShortcutUrl(gm(a)))}">🛡 導航＋啟動神盾</a><details class="card"><summary>首次使用：設定 iPhone 捷徑</summary><ol><li>在「捷徑」App 建立捷徑，名稱設為「${SHIELD_SHORTCUT_NAME}」。</li><li>讓捷徑使用收到的「捷徑輸入」作為網址，加入「開啟 URL」動作。</li><li>再加入「開啟 App」動作，選擇「神盾測速照相」。</li><li>回到這裡點「導航＋啟動神盾」；若 iOS 顯示確認，請依畫面允許。</li></ol><p class="sub">網站會把當日 Google Maps 路線傳入捷徑。捷徑或神盾未設定時，請使用下方 Google 地圖按鈕。</p></details>`:""}<a class="${IS_IOS_DEVICE?"ghost":"btn"}" style="display:block;text-align:center;text-decoration:none;margin:12px 0" href="${gm(a)}" target="_blank" rel="noopener">${IS_IOS_DEVICE?"只開啟 Google 地圖":"在 Google 地圖開啟當日路線"}</a><p class="sub" style="margin-top:10px">全日移動約 ${tot.toFixed(1)} 公里，交通 ${tt} 分鐘</p>
+ ${L.map((g,i)=>`<div class="card row"><span style="font-size:22px">${g.i}</span><div>${esc(a[i].name)} → ${esc(a[i+1].name)}<div class="meta sub">${g.m}約 ${g.t} 分鐘</div></div></div>`).join("")}</main>`}
+
+function budget(){const t=S.trip,n=t.members.length,tot=t.exp.reduce((s,e)=>s+e.amt,0),share=tot/n;
+ const paid={};t.members.forEach(m=>paid[m.n]=0);t.exp.forEach(e=>{paid[e.who]=(paid[e.who]||0)+e.amt});
+ const bal=Object.entries(paid).map(([k,v])=>[k,v-share]);
+ return `<main><div class="card"><div class="sub">總支出</div><div class="sum">$${Math.round(tot).toLocaleString()}</div><div class="sub">${n} 人均分，每人 $${Math.round(share).toLocaleString()}</div></div>
+ <div class="card"><div class="row"><input id="ei" placeholder="項目，例如晚餐"><input id="ea" type="number" inputmode="decimal" placeholder="金額" style="max-width:90px"></div>
+ <div class="row" style="margin-top:8px"><select id="ew" style="flex:1" aria-label="付款人">${t.members.map(m=>`<option>${esc(m.n)}</option>`).join("")}</select><button class="ghost" onclick="addExp()">記一筆</button></div></div>
+ ${t.exp.length?t.exp.map((e,i)=>`<div class="card row"><div style="flex:1">${esc(e.item)}<div class="sub meta">${esc(e.who)} 先付</div></div><b>$${e.amt.toLocaleString()}</b><button class="mini x" onclick="delExp(${i})" aria-label="刪除">✕</button></div>`).join(""):'<div class="empty">還沒有花費紀錄。</div>'}
+ ${tot?`<h2 style="margin:18px 0 8px">分帳結果</h2>${bal.map(([k,v])=>`<div class="card row"><div style="flex:1">${esc(k)}</div><b style="color:${v<0?"var(--warn)":"var(--ac)"}">${v<0?"需付出 $"+Math.round(-v):"可收回 $"+Math.round(v)}</b></div>`).join("")}`:""}</main>`}
+
+function team(){const t=S.trip;
+ return `<main><h2 style="margin:6px 0 10px">旅伴</h2>
+ ${t.members.map((m,i)=>`<div class="card row"><div style="flex:1">${esc(m.n)}${i===0?' <span class="sub">（擁有者）</span>':""}</div><button class="ghost" onclick="role(${i})">${m.r}</button></div>`).join("")}
+ <div class="row"><input id="mn" placeholder="輸入旅伴名稱"><button class="ghost" onclick="addMember()">邀請</button></div>
+ <h2 style="margin:20px 0 8px">共享筆記</h2><textarea oninput="notes(this.value)" placeholder="入住資訊、必吃清單、注意事項">${esc(t.notes)}</textarea>
+ <h2 style="margin:20px 0 8px">編輯紀錄</h2>${t.log.slice(0,8).map(l=>`<div class="leg">• ${esc(l)}</div>`).join("")}</main>`}
+
+function render(){const A=document.getElementById("app");
+ if(!S.trip){A.innerHTML=create();window.XingyouCloud?.mount();return}
+ S.trip=normalizeTrip(S.trip)||null;if(!S.trip){A.innerHTML=create();return}S.day=Math.max(0,Math.min(S.day,S.trip.days.length-1));
+ const t=S.trip,view={plan,map:mapv,rail,budget,team}[S.tab]||plan,V=view(),T=[["plan","🗓️","行程"],["map","🗺️","地圖"],["rail","🚄","交通"],["budget","💰","預算"],["team","👥","協作"]];
+ A.innerHTML=`<header><div><h2>${esc(t.dest)} ${t.days.length} 日遊</h2></div><button class="ghost" onclick="reset()">新行程</button></header>${V}<nav>${T.map(x=>`<button class="${S.tab===x[0]?"on":""}" onclick="setTab('${x[0]}')"><span>${x[1]}</span>${x[2]}</button>`).join("")}</nav>`;window.XingyouCloud?.mount()}
+render();
+</script>
+<script>
+(() => {
+  const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  document.documentElement.classList.toggle("ios-standalone", standalone);
+  const installButton = document.getElementById("install-app");
+  const updateButton = document.getElementById("update-app");
+  const offlineNote = document.getElementById("offline-note");
+  let deferredInstall = null;
+  let swRegistration = null;
+  let refreshing = false;
+  window.addEventListener("beforeinstallprompt", event => {
+    event.preventDefault();
+    deferredInstall = event;
+    installButton.hidden = false;
+  });
+  installButton.addEventListener("click", async () => {
+    if (!deferredInstall) return;
+    deferredInstall.prompt();
+    await deferredInstall.userChoice;
+    deferredInstall = null;
+    installButton.hidden = true;
+  });
+  window.addEventListener("appinstalled", () => {
+    deferredInstall = null;
+    installButton.hidden = true;
+  });
+  const showUpdate = registration => {
+    swRegistration = registration;
+    updateButton.hidden = false;
+  };
+  updateButton.addEventListener("click", () => {
+    const waiting = swRegistration?.waiting;
+    if (!waiting) return;
+    updateButton.disabled = true;
+    updateButton.textContent = "正在更新…";
+    waiting.postMessage({type: "SKIP_WAITING"});
+  });
+  const updateOfflineState = () => { offlineNote.hidden = navigator.onLine; };
+  window.addEventListener("online", updateOfflineState);
+  window.addEventListener("offline", updateOfflineState);
+  updateOfflineState();
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+    navigator.serviceWorker.register("./sw.js", {scope: "./"}).then(registration => {
+      swRegistration = registration;
+      if (registration.waiting) showUpdate(registration);
+      registration.addEventListener("updatefound", () => {
+        const installing = registration.installing;
+        if (!installing) return;
+        installing.addEventListener("statechange", () => {
+          if (installing.state === "installed" && navigator.serviceWorker.controller) showUpdate(registration);
+        });
+      });
+    }).catch(() => {});
+  }
+})();
+</script>
+</body>
+</html>
